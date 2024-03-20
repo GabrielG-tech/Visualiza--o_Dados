@@ -51,7 +51,7 @@ def measure_relational_operator_performance(conn):
     return count, end_time - start_time
  
 def main():
-    database = "dados.db"
+    database = r"C:\\Users\\gabriel.gsouza\\Documents\\Visualização_Dados\\Aula14\\dados.db"
     conn = create_connection(database)
     if conn is not None:
         create_table(conn)
