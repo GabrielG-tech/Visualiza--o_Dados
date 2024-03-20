@@ -1,0 +1,25 @@
+Turno 1:
+Candidato A: 12 votos
+Candidato B: 30 votos
+Candidato C: 5 votos
+
+Turno 2:
+Candidato A: 81 votos
+Candidato B: 70 votos
+Candidato C: 82 votos
+
+Turno 3:
+Candidato A: 61 votos
+Candidato B: 93 votos
+Candidato C: 12 votos
+
+Turno 4:
+Candidato A: 9 votos
+Candidato B: 21 votos
+Candidato C: 86 votos
+
+Turno 5:
+Candidato A: 59 votos
+Candidato B: 18 votos
+Candidato C: 75 votos
+

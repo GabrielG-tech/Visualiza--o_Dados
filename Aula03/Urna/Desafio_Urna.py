@@ -1,4 +1,5 @@
 import os
+import random
 
 # tabela_votacao = [
 #         [0, 0, 0, 0, 0],
@@ -12,37 +13,6 @@ import os
 #         [0, 0, 0, 0, 0], 
 #         [0, 0, 0, 0, 0]
 #     ]
-
-# # Resultados da votação
-# resultados = {
-#     "Candidato A": 150,
-#     "Candidato B": 200,
-#     "Candidato C": 100
-# }
-
-
-# # Nome do arquivo para salvar os resultados
-# nome_arquivo = "resultados_votacao.txt"
-
-# # Caminho para a pasta onde deseja criar o arquivo
-# caminho_pasta = "Aula03"
-
-# # Verifica se o caminho da pasta existe, se não, cria a pasta
-# if not os.path.exists(caminho_pasta):
-#     os.makedirs(caminho_pasta)
-
-# # Caminho completo para o arquivo
-# caminho_completo = os.path.join(caminho_pasta, nome_arquivo)
-
-# # Abrir o arquivo em modo de escrita
-# with open(caminho_completo, "w") as arquivo:
-#     for candidato, votos in resultados.items():
-#         arquivo.write(f"{candidato}: {votos} votos\n")
-
-# =================
-        
-import os
-import random
 
 # Definindo os candidatos
 candidatos = ['Candidato A', 'Candidato B', 'Candidato C']
@@ -59,7 +29,7 @@ def escrever_resultados(arquivo, turno, votos):
     arquivo.write("\n")
 
 # Nome da pasta onde o arquivo será gerado
-pasta_resultados = "Aula03"
+pasta_resultados = "Aula03\\Urna"
 
 # Verifica se a pasta existe, senão a cria
 if not os.path.exists(pasta_resultados):
