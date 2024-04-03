@@ -1,5 +1,6 @@
 import sqlite3 
 import os
+import re
 
 def criar_tabela(cursor):
     cursor.execute("CREATE TABLE IF NOT EXISTS funcionarios (id INTEGER PRIMARY KEY, nome TEXT, telefone TEXT, email TEXT, endereco TEXT, sexo TEXT, pix TEXT, horario_entrada TEXT, horario_saida TEXT, foto TEXT, cpf TEXT, dn TEXT, cartao TEXT, cargo TEXT)")
@@ -14,20 +15,36 @@ def exibir_funcionarios(cursor):
         print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cargo: {funcionario[13]} Horario Entrada: {funcionario[7]} Horario Saida: {funcionario[8]}")
 
 def incluir(cursor):
-    nome = input("Entre com o nome: ")
-    telefone = input("Entre com o telefone: ")
-    email = input("Entre com o email: ")
-    endereco = input("Entre com o endereco: ")
-    sexo = input("Entre com o sexo: ")
-    pix = input("Entre com o pix: ")
-    horario_entrada = input("Entre com o horario_entrada: ")
-    horario_saida = input("Entre com o horario_saida: ")
-    foto = input("Entre com o foto: ")
-    cpf = input("Entre com o cpf: ")
-    dn = input("Entre com o dn: ")
-    cartao = input("Entre com o cartao: ")
-    cargo = input("Entre com o cargo: ")
-    inserir_funcionario(cursor, nome, telefone, email, endereco, sexo, pix, horario_entrada, horario_saida, foto, cpf, dn, cartao, cargo)
+    nome=input ("Nome: ")
+
+    padrao = r'^\(\d{2}\)\d{5}-\d{4}$'
+    telefone=''
+    while not re.match(padrao, telefone):
+        telefone=input("Telefone: ")
+
+    padrao = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+    email=''
+    while not re.match(padrao, email):
+        email=input ("E-mail: ")
+
+    endereco=input("Endereço: ")
+    sexo=input("Sexo: ")
+    pix=input("PIX: ")
+    cargo=input("Cargo: ")
+    hi=input("Hora de entrada: ")
+    ho=input("Hora de saída: ")
+    foto=''
+
+    CPF=input("CPF: ")
+
+    padrao = r'^\d{2}/\d{2}/\d{4}$'
+    DN=''
+    while not re.match(padrao, DN):
+        DN=input("Data de nascimento: ")
+
+    cartao=input("Cartão: ")
+    
+    inserir_funcionario(cursor, nome, telefone, email, endereco, sexo, pix, hi, ho, foto, CPF, DN, cartao, cargo)
     conn.commit()
 
 def listar(cursor):
@@ -37,7 +54,9 @@ def menu():
     print("\n" + "="*8 + " Sistema de Ponto " + "="*8)
     print("[1] - Incluir")
     print("[2] - Listar")
-    print("[3] - Sair")
+    print("[?] - Modificar (em construção...)")
+    print("[?] - Excluir (em construção...)")
+    print("[5] - Sair")
     escolha = input("Escolha uma opção: ")
     return escolha
 
@@ -63,6 +82,10 @@ while True:
     elif escolha == '2':
         listar(cursor)
     elif escolha == '3':
+        print("modificar")
+    elif escolha == '4':
+        print("excluir")
+    elif escolha == '5':
         break
     else:
         print("Opção inválida!")
