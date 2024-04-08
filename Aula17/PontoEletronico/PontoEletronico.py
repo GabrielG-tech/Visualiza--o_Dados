@@ -3,6 +3,8 @@ import os
 import re
 import cv2 # pip install opencv-python
 
+PATH = "Aula17/PontoEletronico"
+
 def menu():
     print("\n" + "="*8 + " Sistema de Ponto " + "="*8)
     print("[1] - Incluir")
@@ -10,8 +12,6 @@ def menu():
     print("[3] - Excluir")
     print("[4] - Atualizar")
     print("[5] - Sair")
-    escolha = input("Escolha uma opção: ")
-    return escolha
 
 def criar_tabela(cursor):
     cursor.execute("CREATE TABLE IF NOT EXISTS funcionarios (id INTEGER PRIMARY KEY, nome TEXT, telefone TEXT, email TEXT, endereco TEXT, sexo TEXT, pix TEXT, horario_entrada TEXT, horario_saida TEXT, foto TEXT, cpf TEXT, dn TEXT, cartao TEXT, cargo TEXT)")
@@ -28,7 +28,6 @@ def exibir_funcionarios(cursor):
 
 def salvarFoto(nome):
     cap = cv2.VideoCapture(0)
-
     if not cap.isOpened():
         print("Erro ao abrir a câmera.")
         exit()
@@ -40,14 +39,18 @@ def salvarFoto(nome):
             break
         cv2.imshow('Captura de Imagem', frame)
         key= cv2.waitKey(1)
-        if key == ord('p'):
+        if key == ord('q'):
             break
-
-    cv2.imwrite ('{nome}_foto.png', frame)
-    print ("Imagem capturada e salva como '{nome}_foto.png'.")
-
+    
+    nome.rstrip().replace(" ","_")
+    PATH_FOTO = PATH + '/fotos'
+    caminho_imagem = os.path.join(PATH_FOTO, f'{nome}_foto.png')
+    cv2.imwrite(caminho_imagem, frame)
+    print(f"Imagem capturada e salva como '{nome}_foto.png'.")
     cap.release()
     cv2.destroyAllWindows()
+
+    return f'{nome}_foto.png'
 
 def incluir(cursor):
     nome = input("Nome: ")
@@ -76,7 +79,7 @@ def incluir(cursor):
     while not re.match(padrao, ho):
         ho = input("Hora de saída: ")
 
-    print("Aperte \"p\" para tirar a foto.")
+    print("Aperte \"q\" para tirar a foto.")
     foto = salvarFoto(nome)
 
     padrao = r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$'
@@ -128,10 +131,18 @@ def atualizar(cursor):
     cursor.execute(f"UPDATE funcionarios SET {campo_escolhido}=? WHERE id=?", (novo_dado, id_funcionario))
     conn.commit()
 
-if not os.path.exists("Aula17/PontoEletronico"):
-    os.makedirs("Aula17/PontoEletronico")
+def validar_input_inteiro(mensagem):
+    while True:
+        try:
+            entrada = int(input(mensagem))
+            return entrada
+        except ValueError:
+            print("Entrada inválida. Por favor, insira um número inteiro existente nas opções.")
 
-conn = sqlite3.connect('Aula17/PontoEletronico/banco.db')
+if not os.path.exists(PATH):
+    os.makedirs(PATH)
+
+conn = sqlite3.connect(f'{PATH}/banco.db')
 cursor = conn.cursor()
 
 criar_tabela(cursor)
@@ -146,16 +157,19 @@ if not funcionarios:
     conn.commit()
 
 while True:
-    escolha = menu()
-    if escolha == '1':
+    menu()
+    escolha = validar_input_inteiro("Escolha uma opção: ")
+
+    if escolha == 1:
         incluir(cursor)
-    elif escolha == '2':
+    elif escolha == 2:
         listar(cursor)
-    elif escolha == '3':
+    elif escolha == 3:
         excluir(cursor)
-    elif escolha == '4':
+    elif escolha == 4:
         atualizar(cursor)
-    elif escolha == '5':
+    elif escolha == 5:
+        print("Fim do programa.")
         break
     else:
         print("Opção inválida!")
