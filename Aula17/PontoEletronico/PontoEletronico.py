@@ -2,6 +2,7 @@ import sqlite3
 import os
 import re
 import cv2 # pip install opencv-python
+import time
 
 PATH = "Aula17/PontoEletronico"
 
@@ -11,7 +12,8 @@ def menu():
     print("[2] - Listar")
     print("[3] - Excluir")
     print("[4] - Atualizar")
-    print("[5] - Sair")
+    print("[5] - Registrar Ponto")
+    print("[6] - Sair")
 
 def criar_tabela(cursor):
     cursor.execute("CREATE TABLE IF NOT EXISTS funcionarios (id INTEGER PRIMARY KEY, nome TEXT, telefone TEXT, email TEXT, endereco TEXT, sexo TEXT, pix TEXT, horario_entrada TEXT, horario_saida TEXT, foto TEXT, cpf TEXT, dn TEXT, cartao TEXT, cargo TEXT)")
@@ -24,7 +26,7 @@ def exibir_funcionarios(cursor):
     cursor.execute("SELECT * FROM funcionarios")
     funcionarios = cursor.fetchall()
     for funcionario in funcionarios:
-        print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cargo: {funcionario[13]} Horario Entrada: {funcionario[7]} Horario Saida: {funcionario[8]}")
+        print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cartão: {13} Cargo: {funcionario[13]} Horario Entrada: {funcionario[7]} Horario Saida: {funcionario[8]}")
 
 def salvarFoto(nome, cpf):
     cap = cv2.VideoCapture(0)
@@ -42,9 +44,9 @@ def salvarFoto(nome, cpf):
         if key == ord('q'):
             break
     
-    nome.strip().replace(" ","_")
+    nome_foto = nome.replace(" ","_")
     PATH_FOTO = PATH + '/fotos'
-    nome_arquivo = f'{nome}_{cpf}_foto.png'
+    nome_arquivo = f'{nome_foto}_{cpf}_foto.png'
     caminho_imagem = os.path.join(PATH_FOTO, nome_arquivo)
     cv2.imwrite(caminho_imagem, frame)
     print(f"Imagem capturada e salva como {nome_arquivo}.")
@@ -54,7 +56,7 @@ def salvarFoto(nome, cpf):
     return nome_arquivo
 
 def incluir(cursor):
-    nome = input("Nome: ")
+    nome = input("Nome: ").strip()
 
     padrao = r'^\(\d{2}\)\d{5}-\d{4}$'
     telefone = ''
@@ -85,7 +87,7 @@ def incluir(cursor):
     while not re.match(padrao, cpf):
         cpf = input("CPF: ")
 
-    print("CliqueAperte \"q\" para tirar a foto.")
+    print("Clique na janelana e aperte \"q\" para tirar a foto.")
     foto = salvarFoto(nome, cpf)
 
     padrao = r'^\d{2}/\d{2}/\d{4}$'
@@ -124,13 +126,48 @@ def atualizar(cursor):
     print("[12] Foto")
     escolha_campo = input("Escolha a opção: ")
 
-    novo_dado = input("Novo dado: ")
+    if escolha_campo == "12":
+        nome_funcionario = input("Nome do funcionário: ")
+        cpf_funcionario = input("CPF do funcionário: ")
+        nova_foto = salvarFoto(nome_funcionario, cpf_funcionario)  # Tira uma nova foto
+        cursor.execute("UPDATE funcionarios SET foto=? WHERE id=?", (nova_foto, id_funcionario))
+        print("Foto atualizada com sucesso.")
+    else:
+        novo_dado = input("Novo dado: ")
 
-    campos = ['nome', 'telefone', 'email', 'endereco', 'sexo', 'pix', 'horario_entrada', 'horario_saida', 'cpf', 'dn', 'cartao', 'foto']
-    campo_escolhido = campos[int(escolha_campo) - 1]
+        campos = ['nome', 'telefone', 'email', 'endereco', 'sexo', 'pix', 'horario_entrada', 'horario_saida', 'cpf', 'dn', 'cartao', 'foto']
+        campo_escolhido = campos[int(escolha_campo) - 1]
 
-    cursor.execute(f"UPDATE funcionarios SET {campo_escolhido}=? WHERE id=?", (novo_dado, id_funcionario))
+        cursor.execute(f"UPDATE funcionarios SET {campo_escolhido}=? WHERE id=?", (novo_dado, id_funcionario))
+        print(f"{campo_escolhido.capitalize()} atualizado com sucesso.")
+
     conn.commit()
+
+def registrar_ponto(cursor, cartao):
+    cursor.execute("SELECT * FROM funcionarios WHERE cartao=?", (cartao,))
+    funcionario_existente = cursor.fetchone()
+    if funcionario_existente:
+        foto_path = funcionario_existente[10]
+        foto = cv2.imread(foto_path)  # Lê a foto
+        if foto is not None:
+            cv2.imshow('Foto do Funcionário', foto)  # Mostra a foto numa nova janela
+            cv2.waitKey(5000)  # Espera 5 segundos
+            cv2.destroyAllWindows()  # Fecha a janela
+        else:
+            print("Foto não encontrada.")
+        print("Funcionário existente:")
+        print(f"Nome: {funcionario_existente[1]}")
+        print(f"CPF: {funcionario_existente[13]}")
+        print(f"Horário de Entrada: {funcionario_existente[7]}")
+        print(f"Data: {funcionario_existente[8]}")
+    else:
+        print("Cartão \033[1mnão\033[0m registrado!")
+    
+    # if funcionario:
+    #     print(f"Ponto registrado para {funcionario[1]}")
+    #     # Aqui você pode implementar a lógica para registrar o ponto (entrada/saída)
+    # else:
+    #     print("Funcionário não encontrado.")
 
 def validar_input_inteiro(mensagem):
     while True:
@@ -151,11 +188,11 @@ criar_tabela(cursor)
 cursor.execute("SELECT * FROM funcionarios")
 funcionarios = cursor.fetchall()
 
-# Caso o banco esteja vazio, crie 2 funcionários exemplo
-if not funcionarios:
-    inserir_funcionario(cursor, "Gabriel", "(21) 9 8765-1848", "gabriel@email.com", "Casa dos bobos nº0", "Masculino", "(21) 9 87645-1848", "13:00:00", "19:00:00", "imagem", "123.456.789-00", "11/07/2003", "123456789", "Estagiário de Desenvolvimento")
-    inserir_funcionario(cursor, "Ronaldo", "(21) 9 8765-1848", "ronaldo@email.com", "Casa dos bobos nº2", "Masculino", "(21) 9 87645-1849", "10:30:00", "19:30:00", "imagem", "123.456.789-00", "15/08/1994", "123456799", "Analista")
-    conn.commit()
+# # Caso o banco esteja vazio, crie 2 funcionários exemplo
+# if not funcionarios:
+#     inserir_funcionario(cursor, "Gabriel", "(21) 9 8765-1848", "gabriel@email.com", "Casa dos bobos nº0", "Masculino", "(21) 9 87645-1848", "13:00:00", "19:00:00", "imagem", "123.456.789-00", "11/07/2003", "123456789", "Estagiário de Desenvolvimento")
+#     inserir_funcionario(cursor, "Ronaldo", "(21) 9 8765-1848", "ronaldo@email.com", "Casa dos bobos nº2", "Masculino", "(21) 9 87645-1849", "10:30:00", "19:30:00", "imagem", "123.456.789-00", "15/08/1994", "123456799", "Analista")
+#     conn.commit()
 
 while True:
     menu()
@@ -173,11 +210,5 @@ while True:
         print("Fim do programa.")
         break
     else:
-        if escolha in funcionarios[12]:
-            primeiro_nome = funcionarios[1].split()
-            print(f"\n======== Funcionário {primeiro_nome[0]} ========")
-            print(f"Id: {funcionarios[0]} Nome: {funcionarios[1]} Cargo: {funcionarios[13]} Horario Entrada: {funcionarios[7]} Horario Saida: {funcionarios[8]}")
-        else:
-            print("Opção inválida!")
-
+        registrar_ponto(cursor, str(escolha))
 conn.close()
