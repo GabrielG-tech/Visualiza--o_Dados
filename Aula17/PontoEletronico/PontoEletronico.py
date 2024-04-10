@@ -26,7 +26,7 @@ def exibir_funcionarios(cursor):
     for funcionario in funcionarios:
         print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cargo: {funcionario[13]} Horario Entrada: {funcionario[7]} Horario Saida: {funcionario[8]}")
 
-def salvarFoto(nome):
+def salvarFoto(nome, cpf):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Erro ao abrir a câmera.")
@@ -42,15 +42,16 @@ def salvarFoto(nome):
         if key == ord('q'):
             break
     
-    nome.rstrip().replace(" ","_")
+    nome.strip().replace(" ","_")
     PATH_FOTO = PATH + '/fotos'
-    caminho_imagem = os.path.join(PATH_FOTO, f'{nome}_foto.png')
+    nome_arquivo = f'{nome}_{cpf}_foto.png'
+    caminho_imagem = os.path.join(PATH_FOTO, nome_arquivo)
     cv2.imwrite(caminho_imagem, frame)
-    print(f"Imagem capturada e salva como '{nome}_foto.png'.")
+    print(f"Imagem capturada e salva como {nome_arquivo}.")
     cap.release()
     cv2.destroyAllWindows()
 
-    return f'{nome}_foto.png'
+    return nome_arquivo
 
 def incluir(cursor):
     nome = input("Nome: ")
@@ -79,13 +80,13 @@ def incluir(cursor):
     while not re.match(padrao, ho):
         ho = input("Hora de saída: ")
 
-    print("Aperte \"q\" para tirar a foto.")
-    foto = salvarFoto(nome)
-
     padrao = r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$'
     cpf = ''
     while not re.match(padrao, cpf):
         cpf = input("CPF: ")
+
+    print("CliqueAperte \"q\" para tirar a foto.")
+    foto = salvarFoto(nome, cpf)
 
     padrao = r'^\d{2}/\d{2}/\d{4}$'
     dn = ''
@@ -172,6 +173,11 @@ while True:
         print("Fim do programa.")
         break
     else:
-        print("Opção inválida!")
+        if escolha in funcionarios[12]:
+            primeiro_nome = funcionarios[1].split()
+            print(f"\n======== Funcionário {primeiro_nome[0]} ========")
+            print(f"Id: {funcionarios[0]} Nome: {funcionarios[1]} Cargo: {funcionarios[13]} Horario Entrada: {funcionarios[7]} Horario Saida: {funcionarios[8]}")
+        else:
+            print("Opção inválida!")
 
 conn.close()
