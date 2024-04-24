@@ -48,3 +48,20 @@ INSERT INTO inscricoes(aluno_id, curso_id) VALUES
     (2,2),
     (3,3),
     (3,1);
+
+SELECT alunos.nome, curso.nome
+FROM inscricoes
+JOIN alunos ON inscricoes.aluno_id=alunos_id
+JOIN cursos ON inscricoes.curso_id=cursos_id
+WHERE cursos.nome='Matemática';
+
+-- ou
+-- SELECT alunos.nome
+-- FROM alunos
+-- INNER JOIN inscricoes
+-- ON alunos.id=inscricoes.aluno_id
+-- INNER JOIN cursos
+-- ON inscricoes.curso_id=curso_id
+-- WHERE cursos.nome='Matemática';
+
+
