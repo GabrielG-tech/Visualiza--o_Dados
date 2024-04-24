@@ -1,214 +1,177 @@
 import sqlite3
 import os
-import re
-import cv2 # pip install opencv-python
-import time
 
-PATH = "Aula17/PontoEletronico"
-
-def menu():
-    print("\n" + "="*8 + " Sistema de Ponto " + "="*8)
-    print("[1] - Incluir")
-    print("[2] - Listar")
-    print("[3] - Excluir")
-    print("[4] - Atualizar")
-    print("[5] - Registrar Ponto")
-    print("[6] - Sair")
-
-def criar_tabela(cursor):
-    cursor.execute("CREATE TABLE IF NOT EXISTS funcionarios (id INTEGER PRIMARY KEY, nome TEXT, telefone TEXT, email TEXT, endereco TEXT, sexo TEXT, pix TEXT, horario_entrada TEXT, horario_saida TEXT, foto TEXT, cpf TEXT, dn TEXT, cartao TEXT, cargo TEXT)")
-
-def inserir_funcionario(cursor, nome, telefone, email, endereco, sexo, pix, horario_entrada, horario_saida, foto, cpf, dn, cartao, cargo):
-    cursor.execute("INSERT INTO funcionarios (nome, telefone, email, endereco, sexo, pix, horario_entrada, horario_saida, foto, cpf, dn, cartao, cargo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                   (nome, telefone, email, endereco, sexo, pix, horario_entrada, horario_saida, foto, cpf, dn, cartao, cargo))
-
-def exibir_funcionarios(cursor):
-    cursor.execute("SELECT * FROM funcionarios")
-    funcionarios = cursor.fetchall()
-    for funcionario in funcionarios:
-        print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cartão: {13} Cargo: {funcionario[13]} Horario Entrada: {funcionario[7]} Horario Saida: {funcionario[8]}")
-
-def salvarFoto(nome, cpf):
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Erro ao abrir a câmera.")
-        exit()
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            print("Erro ao capturar o frame.")
-            break
-        cv2.imshow('Captura de Imagem', frame)
-        key= cv2.waitKey(1)
-        if key == ord('q'):
-            break
+def inic_db():
+    # Obtendo o caminho do diretório atual
+    diretorio_atual = os.getcwd()
     
-    nome_foto = nome.replace(" ","_")
-    PATH_FOTO = PATH + '/fotos'
-    nome_arquivo = f'{nome_foto}_{cpf}_foto.png'
-    caminho_imagem = os.path.join(PATH_FOTO, nome_arquivo)
-    cv2.imwrite(caminho_imagem, frame)
-    print(f"Imagem capturada e salva como {nome_arquivo}.")
-    cap.release()
-    cv2.destroyAllWindows()
-
-    return nome_arquivo
-
-def incluir(cursor):
-    nome = input("Nome: ").strip()
-
-    padrao = r'^\(\d{2}\)\d{5}-\d{4}$'
-    telefone = ''
-    while not re.match(padrao, telefone):
-        telefone = input("Telefone: ")
-
-    padrao = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-    email = ''
-    while not re.match(padrao, email):
-        email = input("E-mail: ")
-
-    endereco = input("Endereço: ")
-    sexo = input("Sexo: ")
-    pix = input("Pix: ")
-    cargo = input("Cargo: ")
-
-    padrao = r'^\d{2}\:\d{2}$'
-    hi = ''
-    while not re.match(padrao, hi):
-        hi = input("Hora de entrada: ")
-
-    ho = ''
-    while not re.match(padrao, ho):
-        ho = input("Hora de saída: ")
-
-    padrao = r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$'
-    cpf = ''
-    while not re.match(padrao, cpf):
-        cpf = input("CPF: ")
-
-    print("Clique na janelana e aperte \"q\" para tirar a foto.")
-    foto = salvarFoto(nome, cpf)
-
-    padrao = r'^\d{2}/\d{2}/\d{4}$'
-    dn = ''
-    while not re.match(padrao, dn):
-        dn = input("Data de Nascimento: ")
-
-    cartao = input("Cartão: ")
-
-    inserir_funcionario(cursor, nome, telefone, email, endereco, sexo, pix, hi, ho, foto, cpf, dn, cartao, cargo)
-    conn.commit()
-
-def listar(cursor):
-    print("\n======== Lista de Funcionarios ========")
-    exibir_funcionarios(cursor)
-
-def excluir(cursor):
-    id_funcionario = input("Digite o ID do funcionário que deseja excluir: ")
-    cursor.execute("DELETE FROM funcionarios WHERE id=?", (id_funcionario,))
-    conn.commit()
-
-def atualizar(cursor):
-    id_funcionario = input("Escolha o ID a atualizar: ")
-    print("===== CAMPO ATUALIZAR =====")
-    print("[1] Nome")
-    print("[2] Telefone")
-    print("[3] Email")
-    print("[4] Endereço")
-    print("[5] Sexo")
-    print("[6] Pix")
-    print("[7] Hora de entrada")
-    print("[8] Hora de saída")
-    print("[9] CPF")
-    print("[10] Data de Nascimento")
-    print("[11] Cartão")
-    print("[12] Foto")
-    escolha_campo = input("Escolha a opção: ")
-
-    if escolha_campo == "12":
-        nome_funcionario = input("Nome do funcionário: ")
-        cpf_funcionario = input("CPF do funcionário: ")
-        nova_foto = salvarFoto(nome_funcionario, cpf_funcionario)  # Tira uma nova foto
-        cursor.execute("UPDATE funcionarios SET foto=? WHERE id=?", (nova_foto, id_funcionario))
-        print("Foto atualizada com sucesso.")
-    else:
-        novo_dado = input("Novo dado: ")
-
-        campos = ['nome', 'telefone', 'email', 'endereco', 'sexo', 'pix', 'horario_entrada', 'horario_saida', 'cpf', 'dn', 'cartao', 'foto']
-        campo_escolhido = campos[int(escolha_campo) - 1]
-
-        cursor.execute(f"UPDATE funcionarios SET {campo_escolhido}=? WHERE id=?", (novo_dado, id_funcionario))
-        print(f"{campo_escolhido.capitalize()} atualizado com sucesso.")
-
-    conn.commit()
-
-def registrar_ponto(cursor, cartao):
-    cursor.execute("SELECT * FROM funcionarios WHERE cartao=?", (cartao,))
-    funcionario_existente = cursor.fetchone()
-    if funcionario_existente:
-        foto_path = funcionario_existente[10]
-        foto = cv2.imread(foto_path)  # Lê a foto
-        if foto is not None:
-            cv2.imshow('Foto do Funcionário', foto)  # Mostra a foto numa nova janela
-            cv2.waitKey(5000)  # Espera 5 segundos
-            cv2.destroyAllWindows()  # Fecha a janela
-        else:
-            print("Foto não encontrada.")
-        print("Funcionário existente:")
-        print(f"Nome: {funcionario_existente[1]}")
-        print(f"CPF: {funcionario_existente[13]}")
-        print(f"Horário de Entrada: {funcionario_existente[7]}")
-        print(f"Data: {funcionario_existente[8]}")
-    else:
-        print("Cartão \033[1mnão\033[0m registrado!")
+    # Criando o caminho completo para a pasta "Fund. Modelagem Relacional e SQL" dentro da pasta "Aula004"
+    caminho_pasta = os.path.join(diretorio_atual, "Aula004", "Fund. Modelagem Relacional e SQL")
     
-    # if funcionario:
-    #     print(f"Ponto registrado para {funcionario[1]}")
-    #     # Aqui você pode implementar a lógica para registrar o ponto (entrada/saída)
-    # else:
-    #     print("Funcionário não encontrado.")
+    # Criando o caminho completo para o banco de dados dentro da pasta específica
+    caminho_banco = os.path.join(caminho_pasta, "exemplo.db")
 
-def validar_input_inteiro(mensagem):
-    while True:
-        try:
-            entrada = int(input(mensagem))
-            return entrada
-        except ValueError:
-            print("Entrada inválida. Por favor, insira um número inteiro existente nas opções.")
+    # Verificando se o diretório existe
+    if not os.path.exists(caminho_pasta):
+        os.makedirs(caminho_pasta)
+        print(f"Diretório {caminho_pasta} criado com sucesso.")
 
-if not os.path.exists(PATH):
-    os.makedirs(PATH)
+    try:
+        # Estabelecendo a conexão com o banco de dados (se não existir, será criado)
+        conn = sqlite3.connect(caminho_banco)
+        print(f"Banco de dados {caminho_banco} conectado com sucesso.")
 
-conn = sqlite3.connect(f'{PATH}/banco.db')
-cursor = conn.cursor()
+        # Criando um cursor para executar comandos SQL
+        cursor = conn.cursor()
 
-criar_tabela(cursor)
+        # Criando tabelas de alunos, cursos e inscrições
+        cursor.execute('''CREATE TABLE IF NOT EXISTS alunos (
+                            id INTEGER PRIMARY KEY,
+                            nome VARCHAR(255) NOT NULL,
+                            idade INTEGER NOT NULL);''')
 
-cursor.execute("SELECT * FROM funcionarios")
-funcionarios = cursor.fetchall()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS cursos (
+                            id INTEGER PRIMARY KEY,
+                            nome VARCHAR(255) UNIQUE NOT NULL,
+                            duracao INTEGER NOT NULL);''')
 
-# # Caso o banco esteja vazio, crie 2 funcionários exemplo
-# if not funcionarios:
-#     inserir_funcionario(cursor, "Gabriel", "(21) 9 8765-1848", "gabriel@email.com", "Casa dos bobos nº0", "Masculino", "(21) 9 87645-1848", "13:00:00", "19:00:00", "imagem", "123.456.789-00", "11/07/2003", "123456789", "Estagiário de Desenvolvimento")
-#     inserir_funcionario(cursor, "Ronaldo", "(21) 9 8765-1848", "ronaldo@email.com", "Casa dos bobos nº2", "Masculino", "(21) 9 87645-1849", "10:30:00", "19:30:00", "imagem", "123.456.789-00", "15/08/1994", "123456799", "Analista")
-#     conn.commit()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS inscricoes (
+                            aluno_id INTEGER,
+                            curso_id INTEGER,
+                            FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+                            FOREIGN KEY (curso_id) REFERENCES cursos(id),
+                            PRIMARY KEY(aluno_id, curso_id));''')
+
+        # Commitando as alterações
+        conn.commit()
+        print("Tabelas criadas com sucesso.")
+    except sqlite3.Error as e:
+        print(f"Erro ao conectar ou criar tabelas: {e}")
+    finally:
+        conn.close()
+
+def listar_alunos():
+    conn = sqlite3.connect('exemplo.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM alunos;")
+
+    alunos = cursor.fetchall()
+
+    print()
+    print('=========================')
+    for aluno in alunos:
+        print(aluno)
+    print('=========================')
+    print()
+
+    conn.close()
+
+def incluir_aluno():
+    listar_alunos()
+
+    conn = sqlite3.connect('exemplo.db')
+    cursor = conn.cursor()
+
+    nome = input("Nome: ")
+    idade = input("Idade: ")
+
+    cursor.execute("INSERT OR IGNORE INTO alunos (nome, idade) VALUES (?, ?)", (nome, idade))
+
+    conn.commit()
+    conn.close()
+
+def listar_cursos():
+    conn = sqlite3.connect('exemplo.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM cursos;")
+
+    cursos = cursor.fetchall()
+
+    print()
+    print('=========================')
+    for curso in cursos:
+        print(curso)
+    print('=========================')
+    print()
+
+    conn.close()
+
+def incluir_curso():
+    listar_cursos()
+
+    conn = sqlite3.connect('exemplo.db')
+    cursor = conn.cursor()
+
+    nome = input("Nome do curso: ")
+    duracao = input("Duração do curso: ")
+
+    cursor.execute("INSERT OR IGNORE INTO cursos (nome, duracao) VALUES (?, ?)", (nome, duracao))
+
+    conn.commit()
+    conn.close()
+
+def listar_inscricoes():
+    conn = sqlite3.connect('exemplo.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT alunos.nome, cursos.nome FROM inscricoes JOIN alunos ON inscricoes.aluno_id = alunos.id JOIN cursos ON inscricoes.curso_id = cursos.id;")
+
+    inscricoes = cursor.fetchall()
+
+    print()
+    print('=========================')
+    for inscricao in inscricoes:
+        print(inscricao)
+    print('=========================')
+    print()
+
+    conn.close()
+
+def incluir_inscricao():
+    listar_alunos()
+    listar_cursos()
+
+    conn = sqlite3.connect('exemplo.db')
+    cursor = conn.cursor()
+
+    aluno_id = input("ID do aluno: ")
+    curso_id = input("ID do curso: ")
+
+    cursor.execute("INSERT OR IGNORE INTO inscricoes (aluno_id, curso_id) VALUES (?, ?)", (aluno_id, curso_id))
+
+    conn.commit()
+    conn.close()
+
+# Programa principal
+inic_db()
 
 while True:
-    menu()
-    escolha = validar_input_inteiro("Escolha uma opção: ")
+    print("==== SISTEMA DE INSCRIÇÕES ====")
+    print("[1] Incluir aluno")
+    print("[2] Incluir curso")
+    print("[3] Incluir inscrição")
+    print("[4] Listar alunos")
+    print("[5] Listar cursos")
+    print("[6] Listar inscrições")
+    print("[7] Sair")
+    inp = input("Escolha a opção: ")
 
-    if escolha == 1:
-        incluir(cursor)
-    elif escolha == 2:
-        listar(cursor)
-    elif escolha == 3:
-        excluir(cursor)
-    elif escolha == 4:
-        atualizar(cursor)
-    elif escolha == 5:
-        print("Fim do programa.")
+    if inp == '1':
+        incluir_aluno()
+    elif inp == '2':
+        incluir_curso()
+    elif inp == '3':
+        incluir_inscricao()
+    elif inp == '4':
+        listar_alunos()
+    elif inp == '5':
+        listar_cursos()
+    elif inp == '6':
+        listar_inscricoes()
+    elif inp == '7':
+        print("==== FIM DO PROGRAMA ====")
         break
     else:
-        registrar_ponto(cursor, str(escolha))
-conn.close()
+        print("==== OPÇÃO INVÁLIDA!!! ====")
