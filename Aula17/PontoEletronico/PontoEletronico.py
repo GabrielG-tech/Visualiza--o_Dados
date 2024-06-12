@@ -1,10 +1,10 @@
 import sqlite3
 import os
 import re
-import cv2 # pip install opencv-python
+import cv2  # pip install opencv-python
 import time
 
-PATH = "Aula17/PontoEletronico"
+PATH = "Aula17\\PontoEletronico"
 
 def menu():
     print("\n" + "="*8 + " Sistema de Ponto " + "="*8)
@@ -12,8 +12,7 @@ def menu():
     print("[2] - Listar")
     print("[3] - Excluir")
     print("[4] - Atualizar")
-    print("[5] - Registrar Ponto")
-    print("[6] - Sair")
+    print("[5] - Sair")
 
 def criar_tabela(cursor):
     cursor.execute("CREATE TABLE IF NOT EXISTS funcionarios (id INTEGER PRIMARY KEY, nome TEXT, telefone TEXT, email TEXT, endereco TEXT, sexo TEXT, pix TEXT, horario_entrada TEXT, horario_saida TEXT, foto TEXT, cpf TEXT, dn TEXT, cartao TEXT, cargo TEXT)")
@@ -26,9 +25,9 @@ def exibir_funcionarios(cursor):
     cursor.execute("SELECT * FROM funcionarios")
     funcionarios = cursor.fetchall()
     for funcionario in funcionarios:
-        print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cartão: {13} Cargo: {funcionario[13]} Horario Entrada: {funcionario[7]} Horario Saida: {funcionario[8]}")
+        print(f"Id: {funcionario[0]} Nome: {funcionario[1]} Cartão: {funcionario[12]} Cargo: {funcionario[13]} Horário Entrada: {funcionario[7]} Horário Saída: {funcionario[8]}")
 
-def salvarFoto(nome, cpf):
+def salvar_foto(nome, cpf):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Erro ao abrir a câmera.")
@@ -40,20 +39,21 @@ def salvarFoto(nome, cpf):
             print("Erro ao capturar o frame.")
             break
         cv2.imshow('Captura de Imagem', frame)
-        key= cv2.waitKey(1)
+        key = cv2.waitKey(1)
         if key == ord('q'):
             break
-    
-    nome_foto = nome.replace(" ","_")
-    PATH_FOTO = PATH + '/fotos'
-    nome_arquivo = f'{nome_foto}_{cpf}_foto.png'
+
+    nome_foto = nome.replace(" ", "_")
+    cpf_foto = cpf.replace(".", "_")
+    PATH_FOTO = os.path.join(PATH, 'fotos')
+    nome_arquivo = f'{nome_foto}_{cpf_foto}_foto.png'
     caminho_imagem = os.path.join(PATH_FOTO, nome_arquivo)
     cv2.imwrite(caminho_imagem, frame)
     print(f"Imagem capturada e salva como {nome_arquivo}.")
     cap.release()
     cv2.destroyAllWindows()
 
-    return nome_arquivo
+    return caminho_imagem
 
 def incluir(cursor):
     nome = input("Nome: ").strip()
@@ -82,18 +82,15 @@ def incluir(cursor):
     while not re.match(padrao, ho):
         ho = input("Hora de saída: ")
 
-    padrao = r'^\d{3}\.\d{3}\.\d{3}\-\d{2}$'
-    cpf = ''
-    while not re.match(padrao, cpf):
-        cpf = input("CPF: ")
-
-    print("Clique na janelana e aperte \"q\" para tirar a foto.")
-    foto = salvarFoto(nome, cpf)
+    cpf = input("CPF: ")
 
     padrao = r'^\d{2}/\d{2}/\d{4}$'
     dn = ''
     while not re.match(padrao, dn):
         dn = input("Data de Nascimento: ")
+
+    print("Clique na janela e aperte \"q\" para tirar a foto.")
+    foto = salvar_foto(nome, cpf)
 
     cartao = input("Cartão: ")
 
@@ -101,7 +98,7 @@ def incluir(cursor):
     conn.commit()
 
 def listar(cursor):
-    print("\n======== Lista de Funcionarios ========")
+    print("\n======== Lista de Funcionários ========")
     exibir_funcionarios(cursor)
 
 def excluir(cursor):
@@ -129,7 +126,7 @@ def atualizar(cursor):
     if escolha_campo == "12":
         nome_funcionario = input("Nome do funcionário: ")
         cpf_funcionario = input("CPF do funcionário: ")
-        nova_foto = salvarFoto(nome_funcionario, cpf_funcionario)  # Tira uma nova foto
+        nova_foto = salvar_foto(nome_funcionario, cpf_funcionario)  # Tira uma nova foto
         cursor.execute("UPDATE funcionarios SET foto=? WHERE id=?", (nova_foto, id_funcionario))
         print("Foto atualizada com sucesso.")
     else:
@@ -147,7 +144,8 @@ def registrar_ponto(cursor, cartao):
     cursor.execute("SELECT * FROM funcionarios WHERE cartao=?", (cartao,))
     funcionario_existente = cursor.fetchone()
     if funcionario_existente:
-        foto_path = funcionario_existente[10]
+        foto_path = funcionario_existente[9]  # Índice 9 é onde o caminho da foto está armazenado
+        print(foto_path)
         foto = cv2.imread(foto_path)  # Lê a foto
         if foto is not None:
             cv2.imshow('Foto do Funcionário', foto)  # Mostra a foto numa nova janela
@@ -157,11 +155,12 @@ def registrar_ponto(cursor, cartao):
             print("Foto não encontrada.")
         print("Funcionário existente:")
         print(f"Nome: {funcionario_existente[1]}")
-        print(f"CPF: {funcionario_existente[13]}")
+        print(f"CPF: {funcionario_existente[10]}")  # Índice 10 é onde o CPF está armazenado
         print(f"Horário de Entrada: {funcionario_existente[7]}")
         print(f"Data: {funcionario_existente[8]}")
     else:
         print("Cartão \033[1mnão\033[0m registrado!")
+
     
     # if funcionario:
     #     print(f"Ponto registrado para {funcionario[1]}")
