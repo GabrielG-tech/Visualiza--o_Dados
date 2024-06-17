@@ -187,11 +187,12 @@ criar_tabela(cursor)
 cursor.execute("SELECT * FROM funcionarios")
 funcionarios = cursor.fetchall()
 
-# # Caso o banco esteja vazio, crie 2 funcionários exemplo
-# if not funcionarios:
-#     inserir_funcionario(cursor, "Gabriel", "(21) 9 8765-1848", "gabriel@email.com", "Casa dos bobos nº0", "Masculino", "(21) 9 87645-1848", "13:00:00", "19:00:00", "imagem", "123.456.789-00", "11/07/2003", "123456789", "Estagiário de Desenvolvimento")
-#     inserir_funcionario(cursor, "Ronaldo", "(21) 9 8765-1848", "ronaldo@email.com", "Casa dos bobos nº2", "Masculino", "(21) 9 87645-1849", "10:30:00", "19:30:00", "imagem", "123.456.789-00", "15/08/1994", "123456799", "Analista")
-#     conn.commit()
+# def add_funcionarios_exemplo():
+#     # Caso o banco esteja vazio, crie 2 funcionários exemplo
+#     if not funcionarios:
+#         inserir_funcionario(cursor, "Gabriel", "(21) 9 8765-1848", "gabriel@email.com", "Casa dos bobos nº0", "Masculino", "(21) 9 87645-1848", "13:00:00", "19:00:00", "imagem", "123.456.789-00", "11/07/2003", "123456789", "Estagiário de Desenvolvimento")
+#         inserir_funcionario(cursor, "Ronaldo", "(21) 9 8765-1848", "ronaldo@email.com", "Casa dos bobos nº2", "Masculino", "(21) 9 87645-1849", "10:30:00", "19:30:00", "imagem", "123.456.789-00", "15/08/1994", "123456799", "Analista")
+#         conn.commit()
 
 while True:
     menu()
