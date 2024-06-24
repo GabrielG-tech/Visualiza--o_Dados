@@ -133,8 +133,8 @@ criar_banco()
 # cadastrar_autor('Machado de Assis')
 # cadastrar_editora('Livraria Garnier', 'Brasil')
 # cadastrar_livro('Dom Casmurro', 5, 2, 5)
-cadastrar_autor('Dan Brown')
-cadastrar_livro('O Código Da Vinci', 6, 1, 4)
+# cadastrar_autor('Dan Brown')
+# cadastrar_livro('O Código Da Vinci', 6, 1, 4)
 
 print("Todos os livros:")
 imprimir_todos_livros()
@@ -145,4 +145,6 @@ imprimir_todas_categorias()
 print("\nTodas as editoras:")
 imprimir_todas_editoras()
 print("\nLivros publicados pelo autor 1:")
-imprimir_livros_por_autor(1)
+imprimir_livros_por_autor(6)
+
+# Fazer menu e fazer mostrar por livro, categoria e obras do autor
