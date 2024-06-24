@@ -140,16 +140,16 @@ def menu():
     inserir_dados_exemplo()
     while True:
         print("\nMenu:")
-        print("1. Imprimir todos os livros")
-        print("2. Imprimir todos os autores")
-        print("3. Imprimir todas as categorias")
-        print("4. Imprimir todas as editoras")
-        print("5. Imprimir livros por autor")
-        print("6. Cadastrar novo livro")
-        print("7. Cadastrar novo autor")
-        print("8. Cadastrar nova categoria")
-        print("9. Cadastrar nova editora")
-        print("0. Sair")
+        print("[1] Imprimir todos os livros")
+        print("[2] Imprimir todos os autores")
+        print("[3] Imprimir todas as categorias")
+        print("[4] Imprimir todas as editoras")
+        print("[5] Imprimir livros por autor")
+        print("[6] Cadastrar novo livro")
+        print("[7] Cadastrar novo autor")
+        print("[8] Cadastrar nova categoria")
+        print("[9] Cadastrar nova editora")
+        print("[0] Sair")
 
         opcao = input("Escolha uma opção: ")
 
@@ -184,5 +184,4 @@ def menu():
             break
         else:
             print("Opção inválida. Tente novamente.")
-
 menu()
