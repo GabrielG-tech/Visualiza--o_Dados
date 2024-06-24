@@ -128,7 +128,11 @@ def imprimir_livros_por_autor(id_autor):
     conn.close()
 
 criar_banco()
-inserir_dados_exemplo()
+# inserir_dados_exemplo()
+# cadastrar_categoria('Romance')
+# cadastrar_autor('Machado de Assis')
+# cadastrar_editora('Livraria Garnier', 'Brasil')
+cadastrar_livro('Dom Casmurro', 5, 2, 5)
 
 print("Todos os livros:")
 imprimir_todos_livros()

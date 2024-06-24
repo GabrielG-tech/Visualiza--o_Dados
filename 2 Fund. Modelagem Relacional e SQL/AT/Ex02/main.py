@@ -152,13 +152,13 @@ def mostrar_menu():
 
 criar_bd()
 
-cadastrar_autor("J.K. Rowling", "1965-07-31", "Britânica")
-cadastrar_autor("George R.R. Martin", "1948-09-20", "Americano")
+# cadastrar_autor("J.K. Rowling", "1965-07-31", "Britânica")
+# cadastrar_autor("George R.R. Martin", "1948-09-20", "Americano")
 
-cadastrar_livro("Harry Potter e a Pedra Filosofal", 1997, "Fantasia", 1)
-cadastrar_livro("Harry Potter e a Câmara Secreta", 1998, "Fantasia", 1)
-cadastrar_livro("A Guerra dos Tronos", 1996, "Fantasia", 2)
-cadastrar_livro("A Fúria dos Reis", 1998, "Fantasia", 2)
+# cadastrar_livro("Harry Potter e a Pedra Filosofal", 1997, "Fantasia", 1)
+# cadastrar_livro("Harry Potter e a Câmara Secreta", 1998, "Fantasia", 1)
+# cadastrar_livro("A Guerra dos Tronos", 1996, "Fantasia", 2)
+# cadastrar_livro("A Fúria dos Reis", 1998, "Fantasia", 2)
 
 while True:
     mostrar_menu()

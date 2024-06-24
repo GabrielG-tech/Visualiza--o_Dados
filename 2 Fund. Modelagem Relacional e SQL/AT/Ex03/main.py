@@ -142,7 +142,7 @@ def mostrar_menu():
     print("8. Sair")
 
 criar_tabelas()
-inserir_dados()
+# inserir_dados()
 
 while True:
     mostrar_menu()
