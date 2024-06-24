@@ -1,6 +1,6 @@
 import sqlite3
 
-PATH = '2 Fund. Modelagem Relacional e SQL\\AT\\Ex03\\'
+PATH = '2 Fund. Modelagem Relacional e SQL/AT/Ex03/'
 NOME_DB = "universidade"
 
 def criar_tabelas():
@@ -38,13 +38,20 @@ def inserir_dados():
     conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
-    alunos = [(1, 'Alice'), (2, 'Bob'), (3, 'Carol')]
-    disciplinas = [(1, 'Matemática'), (2, 'Física'), (3, 'Química'), (4, 'Biologia')]
-    matriculas = [(1, 1), (1, 2), (2, 3), (3, 4), (3, 3), (3, 1)]
+    cursor.execute('SELECT COUNT(*) FROM aluno')
+    if cursor.fetchone()[0] == 0:
+        alunos = [(1, 'Alice'), (2, 'Bob'), (3, 'Carol')]
+        cursor.executemany('INSERT INTO aluno (id_aluno, nome_aluno) VALUES (?, ?)', alunos)
 
-    cursor.executemany('INSERT INTO aluno (id_aluno, nome_aluno) VALUES (?, ?)', alunos)
-    cursor.executemany('INSERT INTO disciplina (id_disciplina, nome_disciplina) VALUES (?, ?)', disciplinas)
-    cursor.executemany('INSERT INTO matricula (id_aluno, id_disciplina) VALUES (?, ?)', matriculas)
+    cursor.execute('SELECT COUNT(*) FROM disciplina')
+    if cursor.fetchone()[0] == 0:
+        disciplinas = [(1, 'Matemática'), (2, 'Física'), (3, 'Química'), (4, 'Biologia')]
+        cursor.executemany('INSERT INTO disciplina (id_disciplina, nome_disciplina) VALUES (?, ?)', disciplinas)
+
+    cursor.execute('SELECT COUNT(*) FROM matricula')
+    if cursor.fetchone()[0] == 0:
+        matriculas = [(1, 1), (1, 2), (2, 3), (3, 4), (3, 3), (3, 1)]
+        cursor.executemany('INSERT INTO matricula (id_aluno, id_disciplina) VALUES (?, ?)', matriculas)
 
     conn.commit()
     conn.close()
@@ -142,7 +149,7 @@ def mostrar_menu():
     print("8. Sair")
 
 criar_tabelas()
-# inserir_dados()
+inserir_dados()
 
 while True:
     mostrar_menu()

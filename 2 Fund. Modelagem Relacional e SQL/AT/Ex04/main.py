@@ -38,22 +38,30 @@ def inserir_dados_exemplo():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (1, 'Fyodor Dostoyevsky')")
-    cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (2, 'George Orwell')")
-    cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (3, 'Franz Kafka')")
-    cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (4, 'Antoine de Saint-Exupéry')")
+    cursor.execute("SELECT COUNT(*) FROM autores")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (1, 'Fyodor Dostoyevsky')")
+        cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (2, 'George Orwell')")
+        cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (3, 'Franz Kafka')")
+        cursor.execute("INSERT INTO autores (id_autor, nome) VALUES (4, 'Antoine de Saint-Exupéry')")
 
-    cursor.execute("INSERT INTO categorias (id_categoria, categoria) VALUES (1, 'Ficção')")
+    cursor.execute("SELECT COUNT(*) FROM categorias")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO categorias (id_categoria, categoria) VALUES (1, 'Ficção')")
 
-    cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (1, 'Penguin Books', 'Rússia')")
-    cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (2, 'Vintage Books', 'Áustria')")
-    cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (3, 'Penguin Books', 'Reino Unido')")
-    cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (4, 'Vintage Books', 'França')")
+    cursor.execute("SELECT COUNT(*) FROM editoras")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (1, 'Penguin Books', 'Rússia')")
+        cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (2, 'Vintage Books', 'Áustria')")
+        cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (3, 'Penguin Books', 'Reino Unido')")
+        cursor.execute("INSERT INTO editoras (id_editora, editora, pais_publicacao) VALUES (4, 'Vintage Books', 'França')")
 
-    cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (1, 'Crime e Castigo', 1, 1, 1)")
-    cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (2, '1984', 2, 1, 1)")
-    cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (3, 'O Processo', 3, 1, 2)")
-    cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (4, 'O Pequeno Príncipe', 4, 1, 2)")
+    cursor.execute("SELECT COUNT(*) FROM livros")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (1, 'Crime e Castigo', 1, 1, 1)")
+        cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (2, '1984', 2, 1, 1)")
+        cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (3, 'O Processo', 3, 1, 2)")
+        cursor.execute("INSERT INTO livros (id_livro, titulo, id_autor, id_categoria, id_editora) VALUES (4, 'O Pequeno Príncipe', 4, 1, 2)")
 
     conn.commit()
     conn.close()
@@ -127,24 +135,54 @@ def imprimir_livros_por_autor(id_autor):
         print(row)
     conn.close()
 
-criar_banco()
-# inserir_dados_exemplo()
-# cadastrar_categoria('Romance')
-# cadastrar_autor('Machado de Assis')
-# cadastrar_editora('Livraria Garnier', 'Brasil')
-# cadastrar_livro('Dom Casmurro', 5, 2, 5)
-# cadastrar_autor('Dan Brown')
-# cadastrar_livro('O Código Da Vinci', 6, 1, 4)
+def menu():
+    criar_banco()
+    inserir_dados_exemplo()
+    while True:
+        print("\nMenu:")
+        print("1. Imprimir todos os livros")
+        print("2. Imprimir todos os autores")
+        print("3. Imprimir todas as categorias")
+        print("4. Imprimir todas as editoras")
+        print("5. Imprimir livros por autor")
+        print("6. Cadastrar novo livro")
+        print("7. Cadastrar novo autor")
+        print("8. Cadastrar nova categoria")
+        print("9. Cadastrar nova editora")
+        print("0. Sair")
 
-print("Todos os livros:")
-imprimir_todos_livros()
-print("\nTodos os autores:")
-imprimir_todos_autores()
-print("\nTodas as categorias:")
-imprimir_todas_categorias()
-print("\nTodas as editoras:")
-imprimir_todas_editoras()
-print("\nLivros publicados pelo autor 1:")
-imprimir_livros_por_autor(6)
+        opcao = input("Escolha uma opção: ")
 
-# Fazer menu e fazer mostrar por livro, categoria e obras do autor
+        if opcao == "1":
+            imprimir_todos_livros()
+        elif opcao == "2":
+            imprimir_todos_autores()
+        elif opcao == "3":
+            imprimir_todas_categorias()
+        elif opcao == "4":
+            imprimir_todas_editoras()
+        elif opcao == "5":
+            id_autor = int(input("Digite o ID do autor: "))
+            imprimir_livros_por_autor(id_autor)
+        elif opcao == "6":
+            titulo = input("Digite o título do livro: ")
+            id_autor = int(input("Digite o ID do autor: "))
+            id_categoria = int(input("Digite o ID da categoria: "))
+            id_editora = int(input("Digite o ID da editora: "))
+            cadastrar_livro(titulo, id_autor, id_categoria, id_editora)
+        elif opcao == "7":
+            nome = input("Digite o nome do autor: ")
+            cadastrar_autor(nome)
+        elif opcao == "8":
+            categoria = input("Digite a categoria: ")
+            cadastrar_categoria(categoria)
+        elif opcao == "9":
+            editora = input("Digite o nome da editora: ")
+            pais_publicacao = input("Digite o país de publicação: ")
+            cadastrar_editora(editora, pais_publicacao)
+        elif opcao == "0":
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+menu()
