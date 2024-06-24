@@ -1,10 +1,11 @@
 import sqlite3
 
 PATH = '2 Fund. Modelagem Relacional e SQL\\AT\\Ex02\\'
+NOME_DB = 'biblioteca'
 
 # Criação do banco de dados e tabelas
 def criar_bd():
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -32,7 +33,7 @@ def criar_bd():
 
 # Funções de CRUD para Autores
 def cadastrar_autor(nome, data_nascimento, nacionalidade):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -44,7 +45,7 @@ def cadastrar_autor(nome, data_nascimento, nacionalidade):
     conn.close()
 
 def editar_autor(id_autor, nome, data_nascimento, nacionalidade):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -57,7 +58,7 @@ def editar_autor(id_autor, nome, data_nascimento, nacionalidade):
     conn.close()
 
 def excluir_autor(id_autor):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -69,7 +70,7 @@ def excluir_autor(id_autor):
 
 # Funções de CRUD para Livros
 def cadastrar_livro(titulo, ano_publicacao, genero, id_autor):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -81,7 +82,7 @@ def cadastrar_livro(titulo, ano_publicacao, genero, id_autor):
     conn.close()
 
 def editar_livro(id_livro, titulo, ano_publicacao, genero, id_autor):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -94,7 +95,7 @@ def editar_livro(id_livro, titulo, ano_publicacao, genero, id_autor):
     conn.close()
 
 def excluir_livro(id_livro):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -106,7 +107,7 @@ def excluir_livro(id_livro):
 
 # Funções para listar autores e livros
 def listar_autores():
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('SELECT * FROM Autor')
@@ -116,7 +117,7 @@ def listar_autores():
     return autores
 
 def listar_livros():
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('SELECT * FROM Livro')
@@ -126,7 +127,7 @@ def listar_livros():
     return livros
 
 def listar_livros_por_autor(id_autor):
-    conn = sqlite3.connect(f'{PATH}autores_livros.db')
+    conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
 
     cursor.execute('''
@@ -211,7 +212,6 @@ while True:
             print(livro)
     elif opcao == '0':
         print("Fim do programa.")
-        # exit()
         break
     else:
         print("Opção inválida! Tente novamente.")
