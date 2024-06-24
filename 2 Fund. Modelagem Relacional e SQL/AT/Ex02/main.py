@@ -3,7 +3,6 @@ import sqlite3
 PATH = '2 Fund. Modelagem Relacional e SQL\\AT\\Ex02\\'
 NOME_DB = 'biblioteca'
 
-# Criação do banco de dados e tabelas
 def criar_bd():
     conn = sqlite3.connect(f'{PATH}{NOME_DB}.db')
     cursor = conn.cursor()
@@ -153,11 +152,9 @@ def mostrar_menu():
 
 criar_bd()
 
-# Inserir autores de exemplo
 cadastrar_autor("J.K. Rowling", "1965-07-31", "Britânica")
 cadastrar_autor("George R.R. Martin", "1948-09-20", "Americano")
 
-# Inserir livros de exemplo
 cadastrar_livro("Harry Potter e a Pedra Filosofal", 1997, "Fantasia", 1)
 cadastrar_livro("Harry Potter e a Câmara Secreta", 1998, "Fantasia", 1)
 cadastrar_livro("A Guerra dos Tronos", 1996, "Fantasia", 2)
